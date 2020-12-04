@@ -1,32 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-import {createStore, applyMiddleware} from 'redux';
+import {createStore, applyMiddleware} from "redux";
+import {Router, Route, IndexRoute, browserHistory} from 'react-router';
+import reduxThunk from 'redux-thunk';
 
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import App from './components/app';
+import SignIn from './components/auth/SignIn';
+import Welcome from './components/welcome';
+import EmployeeList from './components/auth/EmployeeList';
 
 import reducers from './reducers';
 
-import PostsIndex from './components/posts_index';
-import PostsNew from './components/posts_new';
-import PostsShow from "./components/posts_show";
-
-import promise from 'redux-promise';
-
-
-const createStoreWithMiddleware = applyMiddleware(promise)(createStore);
+const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
+const store = createStoreWithMiddleware(reducers);
 
 ReactDOM.render(
-    <Provider store={createStoreWithMiddleware(reducers)}>
-        <BrowserRouter>
-            <div>
-                <Switch>
-                    <Route path={`/posts/new`} component={PostsNew}/>
-                    <Route path={`/posts/:id`} component={PostsShow}/>
-                    <Route path={`/`} component={PostsIndex}/>
-                </Switch>
-            </div>
-        </BrowserRouter>
+    <Provider store={store}>
+        <Router history={browserHistory}>
+            <Route path={`/`} component={App}>
+                <IndexRoute component={Welcome}/>
+                <Route path={`/signin`} component={SignIn}/>
+                <Route path={`/EmployeeList`} component={EmployeeList}/>
+            </Route>
+        </Router>
     </Provider>
-    , document.querySelector('.container')
-);
+    , document.querySelector(`.container`));
